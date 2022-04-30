@@ -1,6 +1,7 @@
 import torch
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+
 # 단층 퍼셉트론 Perceptron
 X = torch.FloatTensor([[0, 0], [0, 1], [1, 0], [1, 1]]).to(device)
 Y = torch.FloatTensor([[0], [1], [1], [0]]).to(device)
@@ -43,4 +44,34 @@ with torch.no_grad():
     hypothesis = model(X)
     predicted = (hypothesis > 0.5).float()
     accuracy = (predicted == Y).float().mean()
-    print('\nHypothesis: ', hypothesis.detach(), '\nCorrect: ', predicted.detach(), '\nAccuracy: ', accuracy.item())
+    print('\nCase: \nLearning Rate: 1\nHypothesis: ', hypothesis.detach(), '\nCorrect: ', predicted.detach(), '\nAccuracy: ', accuracy.item())
+
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+for step in range(10001):
+    optimizer.zero_grad()
+    hypothesis = model(X)
+    cost = criterion(hypothesis, Y)
+    cost.backward()
+    optimizer.step()
+    if step % 100 == 0:
+        print(step, cost.item())
+with torch.no_grad():
+    hypothesis = model(X)
+    predicted = (hypothesis > 0.5).float()
+    accuracy = (predicted == Y).float().mean()
+    print('\nCase: \nLearning Rate: 0.1\nHypothesis: ', hypothesis.detach(), '\nCorrect: ', predicted.detach(), '\nAccuracy: ', accuracy.item())
+
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+for step in range(10001):
+    optimizer.zero_grad()
+    hypothesis = model(X)
+    cost = criterion(hypothesis, Y)
+    cost.backward()
+    optimizer.step()
+    if step % 100 == 0:
+        print(step, cost.item())
+with torch.no_grad():
+    hypothesis = model(X)
+    predicted = (hypothesis > 0.5).float()
+    accuracy = (predicted == Y).float().mean()
+    print('\nCase: \nLearning Rate: 0.01\nHypothesis: ', hypothesis.detach(), '\nCorrect: ', predicted.detach(), '\nAccuracy: ', accuracy.item())
